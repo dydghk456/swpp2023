@@ -98,14 +98,11 @@ public class MultiModeRoom implements Serializable {
             if (muser.getId() == user.getId()) {
                 userToRemove = muser;
                 index = i;
-
                 break;
             }
         }
 
-        // 대상 사용자를 제거합니다.
         if (userToRemove != null) {
-            System.out.println("remove user: " + userToRemove.getNickName());
             userList.remove(userToRemove);
             if (top3UserDistances != null) {
                 UserDistance[] newTop3UserDistance = new UserDistance[Math.min(3, userList.size())];
@@ -119,17 +116,15 @@ public class MultiModeRoom implements Serializable {
             }
         }
 
-        if (index != -1)
+        if (index != -1) {
             removeOutputStream(index);
+        }
 
         if (userList.size() < 1) {
-            System.out.println("exitroom - roomId is " + id);
-            System.out.println();
-            System.out.println();
-            System.out.println();
             RoomManager.removeRoom(this);
             return index;
         }
+
         if (this.roomOwner.equals(user)) {
             this.roomOwner = userList.get(0);
         }
@@ -154,16 +149,15 @@ public class MultiModeRoom implements Serializable {
         this.userList = null;
     }
 
-    public void broadcast(byte[] data) {
-
-    }
-
     @Override
     public boolean equals(Object o) {
-        if (this == o)
+        if (this == o) {
             return true;
-        if (o == null || getClass() != o.getClass())
+        }
+
+        if (o == null || getClass() != o.getClass()) {
             return false;
+        }
 
         MultiModeRoom multiModeRoom = (MultiModeRoom) o;
 
@@ -253,26 +247,19 @@ public class MultiModeRoom implements Serializable {
 
     public UserDistance[] getTop3UserDistance() { // 탑3 유저 distance를 리턴
         if (updateQueue.size() >= userList.size()) {
-            // userList의 크기만큼의 원소를 updateQueue에서 빼내어 저장할 리스트
             List<UserDistance> topUserDistances = new ArrayList<>();
-
-            // userList의 크기만큼 원소를 빼내어 topUserDistances에 저장
             for (int i = 0; i < userList.size(); i++) {
                 UserDistance userDistance = updateQueue.poll();
                 if (userDistance != null) {
                     topUserDistances.add(userDistance);
                 }
             }
-
-            // distance를 기준으로 내림차순으로 정렬
             Collections.sort(topUserDistances, new Comparator<UserDistance>() {
                 @Override
                 public int compare(UserDistance user1, UserDistance user2) {
                     return Double.compare(user2.getDistance(), user1.getDistance());
                 }
             });
-
-            // 상위 3개의 UserDistance 객체를 배열에 저장
             if (top3UserDistances == null) {
                 top3UserDistances = new UserDistance[Math.min(3, topUserDistances.size())];
             }
@@ -282,7 +269,6 @@ public class MultiModeRoom implements Serializable {
 
             return top3UserDistances;
         }
-
         return null;
     }
 

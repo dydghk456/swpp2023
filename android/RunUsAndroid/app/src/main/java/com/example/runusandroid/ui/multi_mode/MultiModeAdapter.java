@@ -93,9 +93,6 @@ public class MultiModeAdapter extends RecyclerView.Adapter<MultiModeAdapter.View
         String timeInfo = startTime + " ~ " + endTime;
 
         timeTextView.setText(timeInfo);
-        Log.d("profile_image", roomOwner.getNickName());
-        Log.d("profile_image", String.format("%d", roomOwner.getId()));
-        Log.d("profile_image", roomOwner.getProfileImageUrl() != null ? roomOwner.getProfileImageUrl() : "");
         Glide.with(holder.itemView.getContext())
                 .load(roomOwner.getProfileImageUrl())
                 .apply(RequestOptions.circleCropTransform())
