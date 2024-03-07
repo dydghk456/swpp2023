@@ -462,7 +462,6 @@ public class MultiModePlayFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        //아래 코드에서 resume때 result fragment로 가는 이유?
         backPressedCallBack = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
@@ -476,10 +475,7 @@ public class MultiModePlayFragment extends Fragment {
         requireActivity().getOnBackPressedDispatcher().addCallback(this, backPressedCallBack);
         socketListenerThread.addPlayFragment(this);
         socketListenerThread.resumeListening();
-
         transitionToResultFragment();
-
-        Log.d("response", "start play screen");
 
         if (ActivityCompat.checkSelfPermission(mainActivity, Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -550,19 +546,15 @@ public class MultiModePlayFragment extends Fragment {
                         Log.d("responseData", responseBodyString);
                         JSONObject jsonObject = null;
                         jsonObject = new JSONObject(responseBodyString);
-                        // "exp" 키의 값을 가져오기
                         JSONObject expObject = jsonObject.getJSONObject("exp");
                         updatedExp = expObject.getInt("exp");
                         JSONObject badgeCollectionObject = jsonObject.getJSONObject("badge_collection");
                         updatedBadgeCollection = badgeCollectionObject.getInt("badge_collection");
-
                     } catch (JSONException e) {
                         throw new RuntimeException(e);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-
-
                     transitionToResultFragment();
                 }
 

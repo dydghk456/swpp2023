@@ -87,7 +87,6 @@ public class MultiModeUser implements Serializable {
         }
 
         MultiModeUser gameUser = (MultiModeUser) o;
-
         return id == gameUser.id;
     }
 

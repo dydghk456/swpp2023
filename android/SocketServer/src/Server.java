@@ -11,7 +11,6 @@ public class Server {
     private ObjectOutputStream oos;
     private static final int PORT = 5001;
     private static final String SERVER_IP = "0.0.0.0";
-    private static int num = 0;
 
     public Server() {
         try {
@@ -80,13 +79,15 @@ public class Server {
                         } else if (((Packet) data).getProtocol() == Protocol.ENTER_ROOM) {
                             MultiModeRoom enteredRoom = RoomManager.getRoom(((Packet) data).getSelectedRoom().getId());
                             if (enteredRoom == null) {
-                                packetBuilder = new PacketBuilder().buildProtocol(Protocol.CLOSED_ROOM_ERROR);
+                                packetBuilder = new PacketBuilder()
+                                        .buildProtocol(Protocol.CLOSED_ROOM_ERROR);
                                 Packet closedRoomPacket = packetBuilder.getPacket();
                                 oos.reset();
                                 oos.writeObject(closedRoomPacket);
                                 oos.flush();
                             } else if (enteredRoom.isRoomFull()) {
-                                packetBuilder = new PacketBuilder().buildProtocol(Protocol.FULL_ROOM_ERROR);
+                                packetBuilder = new PacketBuilder()
+                                        .buildProtocol(Protocol.FULL_ROOM_ERROR);
                                 Packet fullRoomPacket = packetBuilder.getPacket();
                                 oos.reset();
                                 oos.writeObject(fullRoomPacket);
@@ -207,7 +208,6 @@ public class Server {
     }
 
     private void broadcastToRoomUsers(MultiModeRoom room, Packet packet) {
-
         List<ObjectOutputStream> oosList = room.getOutputStream();
         for (int i = 0; i < oosList.size(); i++) {
             ObjectOutputStream oos = oosList.get(i);

@@ -171,7 +171,6 @@ public class MultiModeFragment extends Fragment {
         sharedPreferences = getContext().getSharedPreferences("user_prefs", MODE_PRIVATE);
         long userId = sharedPreferences.getLong("userid", 99999);
         String nickName = sharedPreferences.getString("nickname", "guest");
-        Log.d("multimodefragment nickname : ", nickName);
         int level = sharedPreferences.getInt("level", 0);
         user = new MultiModeUser((int) userId, nickName, level, "");
         accountApi.getUserProfile(String.valueOf(userId)).enqueue(new Callback<UserProfileResponse>() {
@@ -181,18 +180,13 @@ public class MultiModeFragment extends Fragment {
                     imageUrl = response.body().getProfileImageUrl();
                     user = new MultiModeUser((int) userId, nickName, level, imageUrl);
                 }
-
             }
-
             @Override
             public void onFailure(Call<UserProfileResponse> call, Throwable t) {
-                Log.e("UserProfile", "Failed to load user profile", t);
             }
         });
-        Log.d("Profile_image", user.getNickName() + "'s profile_image=" + user.getProfileImageUrl());
 
         View view = inflater.inflate(R.layout.fragment_multi_mode, container, false);
-
         RecyclerView recyclerView = view.findViewById(R.id.recyclerView);
         adapter = new MultiModeAdapter(new ArrayList<MultiModeRoom>());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -310,9 +304,7 @@ public class MultiModeFragment extends Fragment {
             try {
                 ObjectOutputStream oos = socketManager.getOOS();
                 PacketBuilder packetBuilder = new PacketBuilder().buildProtocol(Protocol.CREATE_ROOM).buildUser(user).buildRoomCreateInfo(roomInfo[0]);
-                Log.d("create_room", "before send packet + " + user.getNickname());
                 Packet requestPacket = packetBuilder.getPacket();
-
                 oos.reset();
                 oos.writeObject(requestPacket); // 서버로 패킷 전송
                 oos.flush();

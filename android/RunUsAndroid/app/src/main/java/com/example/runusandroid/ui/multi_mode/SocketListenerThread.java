@@ -83,8 +83,7 @@ public class SocketListenerThread extends Thread implements Serializable { // �
         try {
             while (!Thread.currentThread().isInterrupted()) {
                 if (isPaused) {
-                    // 일시 중지 상태이면 대기
-                    Thread.sleep(1000); // 예: 1초마다 체크
+                    Thread.sleep(1000);
                     continue;
                 }
                 Object receivedObject;
@@ -94,12 +93,10 @@ public class SocketListenerThread extends Thread implements Serializable { // �
 
                 if (receivedObject instanceof Packet) {
                     Packet packet = (Packet) receivedObject;
-                    System.out.println("protocol : " + packet.getProtocol());
                     if (packet.getProtocol() == Protocol.ROOM_LIST) {
                         handler.post(() -> {
                             List<MultiModeRoom> roomList = packet.getRoomList();
                             multiModeFragment.setAdapter(roomList);
-                            Log.d("roomlist ", "roomlist: " + roomList);
                         });
                     } else if (packet.getProtocol() == Protocol.ENTER_ROOM) {
                         handler.post(() -> {
@@ -109,7 +106,6 @@ public class SocketListenerThread extends Thread implements Serializable { // �
                     } else if (packet.getProtocol() == Protocol.CREATE_ROOM) {
                         handler.post(() -> {
                             selectedRoom = packet.getSelectedRoom();
-                            Log.d("create_room", selectedRoom.getRoomOwner().getNickname());
                             multiModeFragment.navigateRoomWait(selectedRoom);
                         });
                     } else if (packet.getProtocol() == Protocol.EXIT_ROOM ||
@@ -123,12 +119,10 @@ public class SocketListenerThread extends Thread implements Serializable { // �
                             } else {
                                 waitFragment.removeUserNameFromWaitingList(user.getNickName());
                             }
-                            Log.d("event", "user list: " + selectedRoom.getUserList());
                             waitFragment.updateParticipantCount(selectedRoom.getUserSize(), selectedRoom.getNumRunners());
                         });
                     } else if (packet.getProtocol() == Protocol.START_GAME) {
                         handler.post(() -> {
-                            Log.d("start game", "start game packet come");
                             if (waitFragment.isFragmentVisible) {
                                 Bundle bundle = new Bundle();
                                 bundle.putSerializable("room", selectedRoom);
@@ -143,10 +137,6 @@ public class SocketListenerThread extends Thread implements Serializable { // �
                         handler.post(() -> {
                             List<UserDistance> temp = packet.getListTop3UserDistance();
                             UserDistance[] userDistances = temp.toArray(new UserDistance[temp.size()]);
-                            Log.d("response", "userDistances.length is " + userDistances.length);
-                            for (int i = 0; i < userDistances.length; i++) {
-                                Log.d("response", "user " + i + " : " + userDistances[i].getUser().getNickName() + " , distance : " + userDistances[i].getDistance());
-                            }
                             playFragment.updateTop3UserDistance(userDistances);
                         });
                     } else if (packet.getProtocol() == Protocol.SAVE_GROUP_HISTORY) {
@@ -168,7 +158,6 @@ public class SocketListenerThread extends Thread implements Serializable { // �
                             List<UserDistance> temp = packet.getListTop3UserDistance();
                             playFragment.userDistances = temp.toArray(new UserDistance[temp.size()]);
                             try {
-                                Log.d("groupHistoryId", Long.toString(packet.getGroupHistoryId()));
                                 playFragment.saveHistoryData(packet.getGroupHistoryId());
                             } catch (JSONException e) {
                                 throw new RuntimeException(e);
@@ -188,7 +177,6 @@ public class SocketListenerThread extends Thread implements Serializable { // �
                 }
             }
         } catch (SocketException e) {
-            Log.d("Socket manager", "connection finished");
             try {
                 SocketManager.getInstance().resetInstance();
             } catch (IOException ex) {
