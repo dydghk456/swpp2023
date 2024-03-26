@@ -6,6 +6,8 @@ from .serializers import (
 )
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.decorators import permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from .models import HistoryRecord, GroupHistoryRecord
 from datetime import datetime, timedelta
@@ -19,6 +21,8 @@ from account.views import processBadgeCollection
 
 # Create your views here.
 class HistoryDetail(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
         user_id = request.data.get("user_id")
         distance = request.data.get("distance")
@@ -84,6 +88,8 @@ class HistoryDetail(APIView):
 
 
 class RecentHistory(APIView):
+    permission_classes = [IsAuthenticated]
+    
     def get(self, request, user_id):
         try:
             user_history = HistoryRecord.objects.filter(user_id=user_id).order_by(
@@ -100,6 +106,8 @@ class RecentHistory(APIView):
 
 
 class GroupHistoryDetail(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
         roomname = request.data.get("roomname")
         start_time_str = request.data.get("start_time")
@@ -132,6 +140,8 @@ class GroupHistoryDetail(APIView):
 
 
 class MonthlyDataView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, year, month, user_id):
         start_date = datetime(year, month, 1).date()
         end_date = (
